@@ -3,6 +3,8 @@ import java.util.List;
 import java.util.Map;
 
 import model.Heroes;
+import model.ImageResponse;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -31,4 +33,9 @@ public interface HeroesAPI {
     @FormUrlEncoded
     @POST("heroes")
     Call<Void> addHero2 (@FieldMap Map<String, String> map);
+
+    //For uploading image
+    @Multipart
+    @POST("upload")
+    Call<ImageResponse> uploadImage(@Part MultipartBody.Part img);
 }
