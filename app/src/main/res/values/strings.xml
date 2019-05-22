@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Heroes</string>
+    <string name="title_activity_add_hero">AddHeroActivity</string>
+</resources>
