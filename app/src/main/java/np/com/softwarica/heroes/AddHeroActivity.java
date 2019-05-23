@@ -25,11 +25,16 @@ import java.util.Map;
 
 import api.HeroesAPI;
 import model.Heroes;
+import model.ImageResponse;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import url.Url;
 
 public class AddHeroActivity extends AppCompatActivity {
 
@@ -38,6 +43,7 @@ public class AddHeroActivity extends AppCompatActivity {
     private Button btnRegister, btnShow;
     private ImageView imgHero;
     String imagePath;
+    String imageName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +82,12 @@ public class AddHeroActivity extends AppCompatActivity {
     }
 
 
-    //Load Image Using URL
-//        private void strictMode(){
-//        android.os.StrictMode.ThreadPolicy threadPolicy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        android.os.StrictMode.setThreadPolicy(threadPolicy);
-//    }
+//    Load Image Using URL
+        private void strictMode()
+        {
+            android.os.StrictMode.ThreadPolicy threadPolicy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
+            android.os.StrictMode.setThreadPolicy(threadPolicy);
+        }
 //
 //    private void loadFromURL(){
 //        strictMode();
@@ -144,6 +151,7 @@ public class AddHeroActivity extends AppCompatActivity {
         Map<String,String> map = new HashMap<>();
         map.put("name", name);
         map.put("desc", desc);
+        map.put("image", imageName);
 
         Heroes heroes = new Heroes(name, desc);
 
@@ -179,6 +187,30 @@ public class AddHeroActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void saveImageOnly()
+    {
+        File file = new File(imagePath);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("imageFile", file.getName(), requestBody);
+
+        HeroesAPI heroesAPI = Url.getInstance().create(HeroesAPI.class);
+        Call<ImageResponse> responseBodyCall = heroesAPI.uploadImage(body);
+        strictMode();
+
+        try {
+            Response<ImageResponse> imageResponseResponse = responseBodyCall.execute();
+
+            String imageName = imageResponseResponse.body().getFileName();
+        }
+        catch (IOException e)
+        {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+
 
 
     //For Uploading & Retrieving Image
